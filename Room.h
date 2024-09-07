@@ -11,11 +11,11 @@ protected:
 public:
     Goods(float price = 0) : _price{price} {}
 
-    void SetPrice(float p);
+    void SetPrice(float price) { _price = price; }
     
-    static void SetExtra(float extra);
+    static void SetExtra(float extra) { _extra = extra; }
 
-    float FullPrice() const;
+    float GoodsPrice() const { return _price * (1 + _extra); }
 };
 
 
@@ -27,9 +27,9 @@ protected:
 public:
     Rect(float x1 = 0, float x2 = 0) : _x1{x1}, _x2{x2} {}
 
-    void SetSize(float x1, float x2);
+    void SetSize(float x1, float x2) { _x1 = x1; _x2 = x2; }
 
-    float Area() const;
+    float Area() const { return _x1 * _x2; } // calculating area
 
     Rect& operator = (const Rect&) = default; // explicitly allowed to create bitwise assignment
 
@@ -88,10 +88,42 @@ public:
         _CarcassInd = new int[MaxRect];
     }
 
+    Room(Room&& room); // move constructor
+
     ~Room() {
         if (_CarcassList) delete[] _CarcassList;
         if (_CarcassInd) delete[] _CarcassInd;
     }
+
+    TErr ErrorState() const {
+        return ErrorState;
+    }
+
+    void ClearErrorState() {
+        ErrorState = TErr::OK;
+    }
+
+    Room& operator += (const Rect& rect);
+
+    Room& operator -= (const Rect& rect);
+
+    Room& operator += (const Rects rects);
+    
+    float GetCost(); // returns full price of repair works
+
+    Rect& operator [] (const int& i); // access to element by index
+
+    void Copy(const Room& room);
+
+    Room(const Room& room);
+
+    Room& operator = (const Room& room);
+
+    Room& operator = (Room&& room);
+
+    void Move(Room& room); // move data
+
+
 };
 
 
