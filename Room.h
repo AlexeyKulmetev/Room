@@ -21,13 +21,17 @@ public:
 
 class Rect {
 protected:
-    float _x1;
-    float _x2;
+    float _x1; // length
+    float _x2; // width
 
 public:
     Rect(float x1 = 0, float x2 = 0) : _x1{x1}, _x2{x2} {}
 
-    void SetSize(float x1, float x2) { _x1 = x1; _x2 = x2; }
+    void SetSize(float x1, float x2) 
+    { 
+        _x1 = x1 < 0 ? 0 : x1;
+        _x2 = x2 < 0 ? 0 : x2;
+    }
 
     float Area() const { return _x1 * _x2; } // calculating area
 
@@ -41,20 +45,34 @@ public:
 
 class Box: public Rect {
 protected:
-    float _x0;
+    float _x0; // height
 
 public:
     Box(float x0 = 0, float x1 = 0, float x2 = 0) : Rect(x1, x2), _x0{x0} {}
 
-    void SetSize(float x0);
+    void SetSize(float x0) { _x0 = x0; }
 
-    void SetSize(float x0, float x1, float x2);
+    void SetSize(float x0, float x1, float x2) 
+    {
+        Rect::SetSize(x1, x2);
+        _x0 = x0;
+    }
 
-    float Area() const; // surface area calculating method
+    float Area() const // surface area calculating method
+    {
+        return 2 * _x1 * _x2 + 2 * _x0 * (_x1 + _x2);
+    }
 
-    Rect GetRect(int i, int j); // parallelepiped edge selection method
+    Rect GetRect(int i, int j) // parallelepiped edge selection method
+    {
+        float tmp[3] = {_x0, _x1, _x2};
+        return Rect(tmp[i], tmp[j]);
+    }
 
-    Rect operator () (int i, int j); // parallelepiped edge selection operator
+    Rect operator () (int i, int j) // parallelepiped edge selection operator
+    {
+        return Rect(i, j);
+    }
 
     friend std::ostream& operator << (std::ostream& out, const Box& box);
 
@@ -85,7 +103,18 @@ public:
         if (maxrect < 1) maxrect = 1;
         MaxRect = maxrect;
         _CarcassList = new Rect[MaxRect];
+        if (!_CarcassList) 
+        { 
+            ErrorState = TErr::BAD_ALLOC; 
+            return;
+        }
         _CarcassInd = new int[MaxRect];
+        if (!_CarcassInd) 
+        { 
+            delete[] _CarcassList; 
+            ErrorState = TErr::BAD_ALLOC;
+            return;    
+        }
     }
 
     Room(Room&& room); // move constructor
@@ -122,8 +151,6 @@ public:
     Room& operator = (Room&& room);
 
     void Move(Room& room); // move data
-
-
 };
 
 
