@@ -153,16 +153,18 @@ public:
         return *this;
     }
 
-    // FIX ME !!
     // adding a partition group
     Room& operator += (const Rects rects) {
         if (_CarcassNumber >= _MaxRect) _ErrorState = TErr::BUFFER_OVERFLOW;
         else {
-
+            _CarcassList[_CarcassNumber] = Rect(rects);
+            _CarcassInd[_CarcassNumber] = rects._count;
+            ++_CarcassNumber;
         }
+        *this;
     }
     
-    float GetCost(); // returns full price of repair works
+    float GetCost() const; // returns full price of repair works
 
     Rect& operator [] (const int& i) // access to element by index
     {

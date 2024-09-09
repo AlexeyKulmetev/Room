@@ -24,3 +24,12 @@ std::istream& operator >> (std::istream& in, Box& box) {
     in >> box._x0 >> box._x1 >> box._x2;
     return in;
 }
+
+float Room::GetCost() const {
+    float s = Area();
+    for (int i = 0; i < _CarcassNumber; ++i) {
+        s += _CarcassList[i].Area() * _CarcassInd[i];
+    }
+    return s * GoodsPrice();
+}
+
