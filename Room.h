@@ -172,7 +172,20 @@ public:
         else return _CarcassList[i];
     }
 
-    void Copy(const Room& room);
+    void Copy(const Room& room)
+    {
+        *(static_cast<Box*>(this)) = *(static_cast<Box*>(const_cast<Room*>(&room)));
+        *(static_cast<Goods*>(this)) = *(static_cast<Goods*>(const_cast<Room*>(&room)));
+        _MaxRect = room._MaxRect;
+        _CarcassNumber = room._CarcassNumber;
+        _CarcassList = new Rect[_MaxRect];
+        _CarcassInd = new int[_MaxRect];
+        for (int i = 0; i < _CarcassNumber; ++i) {
+            _CarcassList[i] = room._CarcassList[i];
+            _CarcassInd[i] = room._CarcassInd[i];
+        }
+        std::cout << "Copy" << std::endl;
+    }
 
     Room(const Room& room);
 
