@@ -187,13 +187,27 @@ public:
         std::cout << "Copy" << std::endl;
     }
 
-    Room(const Room& room);
+    Room(const Room& room)
+    {
+        Copy(room);
+    }
 
     Room& operator = (const Room& room);
 
     Room& operator = (Room&& room);
 
-    void Move(Room& room); // move data
+    void Move(Room& room)
+    {
+        *(static_cast<Box*>(this)) = *(static_cast<Box*>(const_cast<Room*>(&room))); // const_cast is unnecessary?
+        *(static_cast<Goods*>(this)) = *(static_cast<Goods*>(const_cast<Room*>(&room)));
+        _MaxRect = room._MaxRect;
+        _CarcassNumber = room._CarcassNumber;
+        _CarcassList = room._CarcassList;
+        room._CarcassList = nullptr;
+        _CarcassInd = room._CarcassInd;
+        room._CarcassInd = nullptr;
+        std::cout << "Move" << std::endl;
+    }
 };
 
 
