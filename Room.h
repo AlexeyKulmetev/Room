@@ -79,7 +79,9 @@ public:
     friend std::istream& operator >> (std::istream& in, Box& box);
 };
 
+
     enum class TErr {OK, BUFFER_OVERFLOW, BAD_ALLOC};
+
 
 class Room : public Box, public Goods {
 public:
@@ -117,7 +119,10 @@ public:
         }
     }
 
-    Room(Room&& room); // move constructor
+    Room(Room&& room)
+    {
+        Move(room);
+    }
 
     ~Room() {
         if (_CarcassList) delete[] _CarcassList;
@@ -161,7 +166,7 @@ public:
             _CarcassInd[_CarcassNumber] = rects._count;
             ++_CarcassNumber;
         }
-        *this;
+        return *this;
     }
     
     float GetCost() const; // returns full price of repair works
@@ -192,9 +197,25 @@ public:
         Copy(room);
     }
 
-    Room& operator = (const Room& room);
+    Room& operator = (const Room& room)
+    {
+        if (_CarcassList) delete[] _CarcassList;
+        if (_CarcassInd) delete[] _CarcassInd;
+        Copy(room);
+        std::cout << " = &" << std::endl;
+        return *this;
+    }
 
-    Room& operator = (Room&& room);
+    Room& operator = (Room&& room)
+    {
+        if (_CarcassList) delete[] _CarcassList;
+        if (_CarcassInd) delete[] _CarcassInd;
+        Move(room);
+        std::cout << " = &&" << std::endl;
+        return *this;
+    }
+
+    friend std::ostream& operator << (std::ostream out, const Room& room);
 
     void Move(Room& room)
     {
