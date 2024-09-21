@@ -23,8 +23,8 @@ std::ostream& operator << (std::ostream& out, const Box& box)
     return out;
 }
 
-std::istream& operator >> (std::istream& in, Box& box) {
-
+std::istream& operator >> (std::istream& in, Box& box) 
+{
     in >> box._x0 >> box._x1 >> box._x2;
     return in;
 }
@@ -43,6 +43,6 @@ std::ostream& operator << (std::ostream out, const Room& room)
     out << " (" << room._x0 << " x " << room._x1 << " x " << room._x2 << ") " << std::endl;
     for (int i = 0; i < room._CarcassNumber; ++i) {
         out << "[" << i << "]: " << room._CarcassList[i] << " : " << room._CarcassInd[i] << "; ";
-        return out;
     }
+        return out;
 }

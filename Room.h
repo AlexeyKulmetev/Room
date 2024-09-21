@@ -80,7 +80,7 @@ public:
 };
 
 
-    enum class TErr {OK, BUFFER_OVERFLOW, BAD_ALLOC};
+enum class TErr {OK, BUFFER_OVERFLOW, BAD_ALLOC};
 
 
 class Room : public Box, public Goods {
@@ -95,7 +95,7 @@ private:
     Rect *_CarcassList{nullptr};
     int  *_CarcassInd;
     int _MaxRect;
-    int _CarcassNumber;
+    int _CarcassNumber{ 0 }; 
     TErr _ErrorState{TErr::OK};
     // Element for links whin incorrectly accessed by index
     static Rect _BadRect;
@@ -105,17 +105,14 @@ public:
         if (maxrect < 1) maxrect = 1;
         _MaxRect = maxrect;
         _CarcassList = new Rect[_MaxRect];
-        if (!_CarcassList) 
-        { 
-            _ErrorState = TErr::BAD_ALLOC; 
+        if (!_CarcassList) {
+            _ErrorState = TErr::BAD_ALLOC;
             return;
         }
         _CarcassInd = new int[_MaxRect];
-        if (!_CarcassInd) 
-        { 
-            delete[] _CarcassList; 
+        if (!_CarcassInd) {
             _ErrorState = TErr::BAD_ALLOC;
-            return;    
+            return;
         }
     }
 
@@ -125,8 +122,8 @@ public:
     }
 
     ~Room() {
-        if (_CarcassList) delete[] _CarcassList;
-        if (_CarcassInd) delete[] _CarcassInd;
+        if (_CarcassList) delete[]_CarcassList;
+        if (_CarcassInd) delete[]_CarcassInd;
     }
 
     TErr ErrorState() const {
@@ -138,43 +135,51 @@ public:
     }
 
     // adding a partition
-    Room& operator += (const Rect& rect) 
-    {
-        if (_CarcassNumber >= _MaxRect) _ErrorState = TErr::BUFFER_OVERFLOW;
-        else {
+    Room& operator += (const Rect& rect) {
+        if (_CarcassNumber < _MaxRect) {
             _CarcassList[_CarcassNumber] = rect;
             _CarcassInd[_CarcassNumber++] = +1;
+        }
+
+        else {
+            _ErrorState = TErr::BUFFER_OVERFLOW;
         }
         return *this;
     }
 
     // adding a opening
     Room& operator -= (const Rect& rect) {
-        if (_CarcassNumber >= _MaxRect) _ErrorState = TErr::BUFFER_OVERFLOW;
-        else {
+        if (_CarcassNumber < _MaxRect) {
             _CarcassList[_CarcassNumber] = rect;
             _CarcassInd[_CarcassNumber++] = -1;
+        }
+        else {
+            _ErrorState = TErr::BUFFER_OVERFLOW;
         }
         return *this;
     }
 
     // adding a partition group
     Room& operator += (const Rects rects) {
-        if (_CarcassNumber >= _MaxRect) _ErrorState = TErr::BUFFER_OVERFLOW;
-        else {
+        if (_CarcassNumber < _MaxRect) {
             _CarcassList[_CarcassNumber] = Rect(rects);
-            _CarcassInd[_CarcassNumber] = rects._count;
-            ++_CarcassNumber;
+            _CarcassInd[_CarcassNumber++] = rects._count;
+        }
+        else {
+            _ErrorState = TErr::BUFFER_OVERFLOW;
         }
         return *this;
     }
     
     float GetCost() const; // returns full price of repair works
 
-    Rect& operator [] (const int& i) // access to element by index
-    {
-        if (i < 0 || i >= _CarcassNumber) return _BadRect;
-        else return _CarcassList[i];
+    Rect& operator [] (const int& i) { // access to element by index
+        if (i >= 0 && i < _CarcassNumber) {
+            return _CarcassList[i];
+        }
+        else {
+            return _BadRect;
+        }
     }
 
     void Copy(const Room& room)
@@ -199,8 +204,8 @@ public:
 
     Room& operator = (const Room& room)
     {
-        if (_CarcassList) delete[] _CarcassList;
-        if (_CarcassInd) delete[] _CarcassInd;
+        if (_CarcassList) delete[]_CarcassList;
+        if (_CarcassInd) delete[]_CarcassInd;
         Copy(room);
         std::cout << " = &" << std::endl;
         return *this;
@@ -208,8 +213,8 @@ public:
 
     Room& operator = (Room&& room)
     {
-        if (_CarcassList) delete[] _CarcassList;
-        if (_CarcassInd) delete[] _CarcassInd;
+        if (_CarcassList) delete[]_CarcassList;
+        if (_CarcassInd) delete[]_CarcassInd;
         Move(room);
         std::cout << " = &&" << std::endl;
         return *this;
