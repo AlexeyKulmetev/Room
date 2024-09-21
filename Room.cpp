@@ -44,5 +44,5 @@ std::ostream& operator << (std::ostream out, const Room& room)
     for (int i = 0; i < room._CarcassNumber; ++i) {
         out << "[" << i << "]: " << room._CarcassList[i] << " : " << room._CarcassInd[i] << "; ";
     }
-        return out;
+    return out;
 }
