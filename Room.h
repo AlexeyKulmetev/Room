@@ -93,7 +93,7 @@ public:
 
 private:
     Rect *_CarcassList{nullptr};
-    int  *_CarcassInd;
+    int  *_CarcassInd{nullptr};
     int _MaxRect;
     int _CarcassNumber{ 0 }; 
     TErr _ErrorState{TErr::OK};
@@ -101,19 +101,20 @@ private:
     static Rect _BadRect;
 
 public:
-    Room(int maxrect = 10) : Box(), Goods() {
+    Room(int maxrect = 10) {
         if (maxrect < 1) maxrect = 1;
         _MaxRect = maxrect;
-        _CarcassList = new Rect[_MaxRect];
+        _CarcassList = new Rect [_MaxRect];
         if (!_CarcassList) {
             _ErrorState = TErr::BAD_ALLOC;
             return;
         }
-        _CarcassInd = new int[_MaxRect];
+        _CarcassInd = new int [_MaxRect];
         if (!_CarcassInd) {
             _ErrorState = TErr::BAD_ALLOC;
             return;
         }
+        std::cout << "Room constructed" << std::endl;
     }
 
     Room(Room&& room)
@@ -122,8 +123,8 @@ public:
     }
 
     ~Room() {
-        if (_CarcassList) delete[]_CarcassList;
-        if (_CarcassInd) delete[]_CarcassInd;
+        if (_CarcassList) delete[] _CarcassList;
+        if (_CarcassInd) delete[] _CarcassInd;
     }
 
     TErr ErrorState() const {
@@ -140,7 +141,6 @@ public:
             _CarcassList[_CarcassNumber] = rect;
             _CarcassInd[_CarcassNumber++] = +1;
         }
-
         else {
             _ErrorState = TErr::BUFFER_OVERFLOW;
         }
@@ -174,12 +174,10 @@ public:
     float GetCost() const; // returns full price of repair works
 
     Rect& operator [] (const int& i) { // access to element by index
-        if (i >= 0 && i < _CarcassNumber) {
+        if (i >= 0 && i < _CarcassNumber)
             return _CarcassList[i];
-        }
-        else {
+        else
             return _BadRect;
-        }
     }
 
     void Copy(const Room& room)
@@ -188,8 +186,8 @@ public:
         *(static_cast<Goods*>(this)) = *(static_cast<Goods*>(const_cast<Room*>(&room)));
         _MaxRect = room._MaxRect;
         _CarcassNumber = room._CarcassNumber;
-        _CarcassList = new Rect[_MaxRect];
-        _CarcassInd = new int[_MaxRect];
+        _CarcassList = new Rect [_MaxRect];
+        _CarcassInd = new int [_MaxRect];
         for (int i = 0; i < _CarcassNumber; ++i) {
             _CarcassList[i] = room._CarcassList[i];
             _CarcassInd[i] = room._CarcassInd[i];
@@ -204,8 +202,8 @@ public:
 
     Room& operator = (const Room& room)
     {
-        if (_CarcassList) delete[]_CarcassList;
-        if (_CarcassInd) delete[]_CarcassInd;
+        if (_CarcassList) delete[] _CarcassList;
+        if (_CarcassInd) delete[] _CarcassInd;
         Copy(room);
         std::cout << " = &" << std::endl;
         return *this;
@@ -213,8 +211,8 @@ public:
 
     Room& operator = (Room&& room)
     {
-        if (_CarcassList) delete[]_CarcassList;
-        if (_CarcassInd) delete[]_CarcassInd;
+        if (_CarcassList) delete[] _CarcassList;
+        if (_CarcassInd) delete[] _CarcassInd;
         Move(room);
         std::cout << " = &&" << std::endl;
         return *this;
@@ -224,8 +222,8 @@ public:
 
     void Move(Room& room)
     {
-        *(static_cast<Box*>(this)) = *(static_cast<Box*>(const_cast<Room*>(&room))); // const_cast is unnecessary?
-        *(static_cast<Goods*>(this)) = *(static_cast<Goods*>(const_cast<Room*>(&room)));
+        *(static_cast<Box*>(this)) = *(static_cast<Box*>(&room));
+        *(static_cast<Goods*>(this)) = *(static_cast<Goods*>(&room));
         _MaxRect = room._MaxRect;
         _CarcassNumber = room._CarcassNumber;
         _CarcassList = room._CarcassList;
